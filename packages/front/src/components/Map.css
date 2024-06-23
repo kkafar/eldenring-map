@@ -1,0 +1,10 @@
+.scrollable {
+  overflow: scroll;
+}
+
+.viewport-sized {
+  width: auto;
+  height: auto;
+  max-width: 90%;
+  max-height: 90%;
+}
