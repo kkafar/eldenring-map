@@ -1,12 +1,14 @@
 import React from 'react';
-import logo from './logo.svg';
 import map from './assets/maps/m0-overworld.png';
-
 import './App.css';
 
 import { createTRPCClient, httpBatchLink } from '@trpc/client';
 import type { AppRouter } from './server';
 import Map from './components/Map';
+
+import categories from './data/categories.json';
+import data from './data/items.json';
+import MapCanvas from './components/MapCanvas';
 
 const trpc = createTRPCClient<AppRouter>({
   links: [
@@ -16,10 +18,11 @@ const trpc = createTRPCClient<AppRouter>({
   ],
 });
 
+
 function App() {
   return (
-    <div >
-    <Map />
+    <div>
+      <MapCanvas data={data} />
     </div>
   );
 }
