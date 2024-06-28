@@ -26,3 +26,44 @@ export type MarkerDescription = Omit<MarkerDescriptionRaw, 'x' | 'y'> & {
   y: number,
 }
 
+export type CategoryId =
+  'Armor' |
+  'AshesOfWar' |
+  'Bosses' |
+  'Consumables' |
+  'FlaskUpgrades' |
+  'Key' |
+  'Locations' |
+  'Maps' |
+  'Materials' |
+  'NPC' |
+  'NPCInvader' |
+  'Remembrance' |
+  'Shields' |
+  'SiteofGrace' |
+  'Spells' |
+  'SpiritAshes' |
+  'Spiritsprings' |
+  'SummoningPool' |
+  'Talismans' |
+  'UpgradeMaterials' |
+  'Waygates' |
+  'Weapons';
+
+export type CategoryMapping = Record<CategoryId, ItemCategory>;
+
+export type Size = {
+  width: number,
+  height: number,
+};
+
+export type Position = {
+  x: number,
+  y: number,
+}
+
+export type Frame = {
+  origin: Position,
+  size: Size,
+}
+

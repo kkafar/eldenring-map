@@ -1,32 +1,24 @@
+import { RecordExpression } from '@babel/types';
 import { assert } from 'console';
 import React from 'react';
 
-import mapImage from '../assets/maps/m0-overworld.png';
+import mapImage from '../assets/maps/m0-overworld-downscaled-4x.png';
 // import mapImage from '../assets/maps/m0-overworld.png';
-import { MarkerDescriptionRaw } from '../types';
+import { CategoryMapping, Frame, MarkerDescription, Position, Size } from '../types';
 
 import './MapCanvas.css';
 
 type ContentProps = {
-  data: MarkerDescriptionRaw[];
+  data: MarkerDescription[];
+  categoryMapping: CategoryMapping;
 };
-
-type Size = {
-  width: number,
-  height: number,
-};
-
-type Position = {
-  x: number,
-  y: number,
-}
-
-type Frame = {
-  origin: Position,
-  size: Size,
-}
 
 type Props = React.CanvasHTMLAttributes<HTMLCanvasElement> & ContentProps;
+
+type PositionedMarker = {
+  marker: MarkerDescription,
+  mapPosition: Position,
+}
 
 const referenceFrame: Frame = {
   origin: {
@@ -39,29 +31,9 @@ const referenceFrame: Frame = {
   },
 }
 
-function roundedRect(ctx: CanvasRenderingContext2D, x: number, y: number, width: number, height: number, radius: number) {
-  ctx.beginPath();
-  ctx.moveTo(x, y + radius);
-  ctx.arcTo(x, y + height, x + radius, y + height, radius);
-  ctx.arcTo(x + width, y + height, x + width, y + height - radius, radius);
-  ctx.arcTo(x + width, y, x + width - radius, y, radius);
-  ctx.arcTo(x, y, x, y + radius, radius);
-  ctx.stroke();
-}
-
-function drawItem(ctx: CanvasRenderingContext2D, x: number, y: number, marker: MarkerDescriptionRaw) {
-  // I need to take some item description here
-  const mapPosition = { x: x, y: y };
-  // console.log(`Drawing location: ${marker.name} from { x: ${marker.y}, y: ${marker.x} } at ${JSON.stringify(mapPosition)}`)
-  ctx.fillStyle = "rgb(255 0 0 / 50%)";
-  const width = 10;
-  const height = 10;
-  ctx.fillRect(x - width / 2, y - height / 2, width, height);
-}
-
 function mapPositionFromMarkerRawPosition(rx: number, ry: number): Position {
   // X spans from 10 to 245 -> 235
-  // Y from 18 to 238 -> 220
+  // Y from 19 to 238 -> 220
   // Manual correction right now by 1 and 4, cause can't get exact dimensions...
   return {
     x: rx - referenceFrame.origin.x - 1,
@@ -76,27 +48,22 @@ function scalePosition(position: Position, scaleX: number, scaleY: number) {
   }
 }
 
-function drawAllMarkers(ctx: CanvasRenderingContext2D, markers: MarkerDescriptionRaw[], imageSize: Size) {
-  const scaleX = imageSize.width / referenceFrame.size.width;
-  const scaleY = imageSize.height / referenceFrame.size.height;
-
-  // const scaleX = referenceFrame.size.width / imageSize.width;
-  // const scaleY = referenceFrame.size.height / imageSize.height;
-  // console.log(`ScaleX: ${scaleX}, ScaleY: ${scaleY}, imageSize: ${JSON.stringify(imageSize)} referenceFrame: ${JSON.stringify(referenceFrame)}`);
-
-  // markers.filter(marker => marker.category === 'Locations').forEach(marker => {
-  markers.forEach(marker => {
-    const mapPosition = scalePosition(mapPositionFromMarkerRawPosition(Number(marker.y), Math.abs(Number(marker.x))), scaleX, scaleY);
-    drawItem(ctx, mapPosition.x, mapPosition.y, marker);
-  });
-}
-
+const markerWidth = 20;
+const markerHeight = 20;
+const positionMapping: Record<MarkerDescription['id'], Frame> = {};
 
 export default function MapCanvas(props: Props) {
-  console.log("Rendering MapCanvas");
+
+  const {
+    data,
+    categoryMapping,
+    ...canvasProps
+  } = props;
+
   const [imageSize, setImageSize] = React.useState<Size>({ width: 0, height: 0 });
 
-  const ref = React.useRef<HTMLCanvasElement>(null);
+  const canvasRef = React.useRef<HTMLCanvasElement>(null);
+  const dialogRef = React.useRef<HTMLDivElement>(null);
 
   const image = React.useMemo(() => {
     const image = new Image();
@@ -104,24 +71,73 @@ export default function MapCanvas(props: Props) {
     return image;
   }, []);
 
-  React.useEffect(() => {
-    image.addEventListener('load', () => {
-      console.log("Image loaded");
-      setImageSize({ width: image.width, height: image.height });
+  const drawItem = React.useCallback((ctx: CanvasRenderingContext2D, frame: Frame, marker: MarkerDescription) => {
+    // I need to take some item description here
+    console.log(`Drawing location: ${marker.name} from { x: ${marker.y}, y: ${marker.x} } at ${JSON.stringify(frame.origin)}`)
+    ctx.fillStyle = "rgb(255 0 0 / 50%)";
+    ctx.fillRect(frame.origin.x, frame.origin.y, frame.size.width, frame.size.height);
+  }, []);
+
+  const drawAllMarkers = React.useCallback((ctx: CanvasRenderingContext2D, markers: MarkerDescription[], imageSize: Size) => {
+    const scaleX = imageSize.width / referenceFrame.size.width;
+    const scaleY = imageSize.height / referenceFrame.size.height;
+    // console.log(`ScaleX: ${scaleX}, ScaleY: ${scaleY}, imageSize: ${JSON.stringify(imageSize)} referenceFrame: ${JSON.stringify(referenceFrame)}`);
+    // markers.filter(marker => marker.category === 'Locations').forEach(marker => {
+    markers.forEach(marker => {
+      const exactPosition = scalePosition(mapPositionFromMarkerRawPosition(marker.x, marker.y), scaleX, scaleY);
+      const markerFrame: Frame = {
+        origin: {
+          x: exactPosition.x - markerWidth / 2,
+          y: exactPosition.y - markerHeight / 2,
+        },
+        size: {
+          width: markerWidth,
+          height: markerHeight,
+        },
+      }
+      positionMapping[marker.id] = markerFrame;
+      drawItem(ctx, markerFrame, marker);
     });
+  }, []);
+
+  const handleImageLoad = React.useCallback(() => {
+    setImageSize({ width: image.width, height: image.height });
+    console.log(`Setting imageSize to ${image.width} x ${image.height}`);
+  }, []);
+
+  const handleClick = React.useCallback((event: MouseEvent) => {
+    const x = event.pageX;
+    const y = event.pageY;
+    for (const itemId in positionMapping) {
+      const itemPosition = positionMapping[itemId];
+      if (x >= itemPosition.origin.x && x <= itemPosition.origin.x + itemPosition.size.width && y >= itemPosition.origin.y && y <= itemPosition.origin.y + itemPosition.size.height) {
+        console.log(`Hit item with id ${itemId}`);
+      }
+    }
+  }, []);
+
+  React.useEffect(() => {
+    window.addEventListener('click', handleClick);
+    return () => {
+      window.removeEventListener('click', handleClick);
+    };
+  }, []);
+
+  React.useEffect(() => {
+    image.addEventListener('load', handleImageLoad);
+    return () => {
+      image.removeEventListener('load', handleImageLoad);
+    };
   }, [image]);
 
   React.useEffect(() => {
-    console.log("useEffect");
-    if (!ref.current) {
-      console.warn("Nullish reference");
+    if (!canvasRef.current) {
       return;
     }
 
-    const ctx = ref.current.getContext("2d");
+    const ctx = canvasRef.current.getContext("2d");
 
     if (!ctx) {
-      console.log("No context present")
       return;
     }
 
@@ -132,7 +148,10 @@ export default function MapCanvas(props: Props) {
   }, [imageSize]);
 
   return (
-    <canvas ref={ref} width={imageSize.width} height={imageSize.height} {...props}>Fallback text</canvas>
+    <div>
+      <canvas ref={canvasRef} width={imageSize.width} height={imageSize.height} {...canvasProps}>Fallback text</canvas>
+      <div ref={dialogRef}></div>
+    </div>
   );
 }
 
