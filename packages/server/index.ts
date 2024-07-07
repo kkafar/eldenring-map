@@ -1,5 +1,5 @@
 import { createHTTPServer } from '@trpc/server/adapters/standalone';
-import { publicProcedure, router } from "./trpc";
+import { createContext, publicProcedure, router } from "./trpc";
 import cors from 'cors';
 
 const appRouter = router({
@@ -15,8 +15,10 @@ export type AppRouter = typeof appRouter;
 const server = createHTTPServer({
   middleware: cors(),
   router: appRouter,
+  createContext,
 });
 
 console.log("Will be running server on port 8088");
 
 server.listen(8088);
+
