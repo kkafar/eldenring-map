@@ -1,5 +1,3 @@
-import { RecordExpression } from '@babel/types';
-import { assert } from 'console';
 import React from 'react';
 
 import mapImage from '../assets/maps/m0-overworld-downscaled-4x.png';
@@ -20,6 +18,7 @@ type PositionedMarker = {
   mapPosition: Position,
 }
 
+// Dimensions of the data-source map.
 const referenceFrame: Frame = {
   origin: {
     x: 10,
@@ -51,6 +50,7 @@ function scalePosition(position: Position, scaleX: number, scaleY: number) {
 const markerWidth = 20;
 const markerHeight = 20;
 const positionMapping: Record<MarkerDescription['id'], Frame> = {};
+const visitedMarkers: Set<MarkerDescription['id']> = new Set();
 
 export default function MapCanvas(props: Props) {
 
@@ -60,6 +60,7 @@ export default function MapCanvas(props: Props) {
     ...canvasProps
   } = props;
 
+  const [dummyState, setDummyState] = React.useState<number>(0);
   const [imageSize, setImageSize] = React.useState<Size>({ width: 0, height: 0 });
 
   const canvasRef = React.useRef<HTMLCanvasElement>(null);
@@ -71,10 +72,15 @@ export default function MapCanvas(props: Props) {
     return image;
   }, []);
 
+  const triggerRender = React.useCallback(() => {
+    setDummyState((old) => old + 1);
+  }, []);
+
   const drawItem = React.useCallback((ctx: CanvasRenderingContext2D, frame: Frame, marker: MarkerDescription) => {
     // I need to take some item description here
-    console.log(`Drawing location: ${marker.name} from { x: ${marker.y}, y: ${marker.x} } at ${JSON.stringify(frame.origin)}`)
-    ctx.fillStyle = "rgb(255 0 0 / 50%)";
+    // console.log(`Drawing location: ${marker.name} from { x: ${marker.y}, y: ${marker.x} } at ${JSON.stringify(frame.origin)}`)
+    const fillStyleLiteral = visitedMarkers.has(marker.id) ? "rgb(0 0 255 / 50%)" : "rgb(255 0 0 / 50%)";
+    ctx.fillStyle = fillStyleLiteral;
     ctx.fillRect(frame.origin.x, frame.origin.y, frame.size.width, frame.size.height);
   }, []);
 
@@ -98,12 +104,12 @@ export default function MapCanvas(props: Props) {
       positionMapping[marker.id] = markerFrame;
       drawItem(ctx, markerFrame, marker);
     });
-  }, []);
+  }, [drawItem]);
 
   const handleImageLoad = React.useCallback(() => {
     setImageSize({ width: image.width, height: image.height });
     console.log(`Setting imageSize to ${image.width} x ${image.height}`);
-  }, []);
+  }, [image]);
 
   const handleClick = React.useCallback((event: MouseEvent) => {
     const x = event.pageX;
@@ -112,23 +118,26 @@ export default function MapCanvas(props: Props) {
       const itemPosition = positionMapping[itemId];
       if (x >= itemPosition.origin.x && x <= itemPosition.origin.x + itemPosition.size.width && y >= itemPosition.origin.y && y <= itemPosition.origin.y + itemPosition.size.height) {
         console.log(`Hit item with id ${itemId}`);
+        visitedMarkers.add(Number(itemId));
+        triggerRender();
+        break;
       }
     }
-  }, []);
+  }, [triggerRender]);
 
   React.useEffect(() => {
     window.addEventListener('click', handleClick);
     return () => {
       window.removeEventListener('click', handleClick);
     };
-  }, []);
+  }, [handleClick]);
 
   React.useEffect(() => {
     image.addEventListener('load', handleImageLoad);
     return () => {
       image.removeEventListener('load', handleImageLoad);
     };
-  }, [image]);
+  }, [image, handleImageLoad]);
 
   React.useEffect(() => {
     if (!canvasRef.current) {
@@ -145,7 +154,7 @@ export default function MapCanvas(props: Props) {
     ctx.drawImage(image, 0, 0);
 
     drawAllMarkers(ctx, props.data, imageSize);
-  }, [imageSize]);
+  }, [imageSize, dummyState, drawAllMarkers, image, props.data]);
 
   return (
     <div>
