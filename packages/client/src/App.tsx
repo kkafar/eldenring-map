@@ -2,7 +2,7 @@ import React from 'react';
 import './App.css';
 
 import { createTRPCClient, httpBatchLink } from '@trpc/client';
-import type { AppRouter } from './server';
+import type { AppRouter } from '../../server';
 
 import categories from './data/categories.json';
 import data from './data/items.json';
@@ -48,6 +48,17 @@ const preprocessedItemData = preprocessItemData(data);
 const categoryMapping = preprocessCategoryData(categories);
 
 function App() {
+  React.useEffect(() => {
+    async function callback() {
+      let pongResult = await trpc.ping.query();
+      console.log(`Pong result: ${JSON.stringify(pongResult)}`);
+    }
+
+    console.log("Sending ping to server");
+    callback();
+
+  }, []);
+
   return (
     <div>
       <MapCanvas data={preprocessedItemData} categoryMapping={categoryMapping} />
