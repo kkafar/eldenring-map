@@ -52,6 +52,9 @@ function App() {
     async function callback() {
       let pongResult = await trpc.ping.query();
       console.log(`Pong result: ${JSON.stringify(pongResult)}`);
+
+      let userResult = await trpc.createUser.mutate({ userName: 'testUser' });
+      console.log(`createUser result: ${JSON.stringify(userResult)}`);
     }
 
     console.log("Sending ping to server");
@@ -67,3 +70,4 @@ function App() {
 }
 
 export default App;
+

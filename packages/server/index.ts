@@ -1,6 +1,7 @@
 import { createHTTPServer } from '@trpc/server/adapters/standalone';
 import { createContext, publicProcedure, router } from "./trpc";
 import cors from 'cors';
+import { z } from 'zod';
 
 const appRouter = router({
   ping: publicProcedure
@@ -8,6 +9,14 @@ const appRouter = router({
       const response = { data: "pong" };
       return response;
     }),
+  createUser: publicProcedure
+    .input(z.object({
+      userName: z.string(),
+    }))
+    .mutation(async (opts) => {
+      const { input, ctx } = opts;
+      ctx.db.insertUser({ name: input.userName });
+    })
 });
 
 export type AppRouter = typeof appRouter;

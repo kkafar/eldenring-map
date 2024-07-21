@@ -24,3 +24,7 @@ yarn-error.log*
 
 data/
 
+.vite/
+*local.*
+*.local
+

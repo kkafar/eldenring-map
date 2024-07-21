@@ -1,6 +1,10 @@
-import { Database } from "sqlite3"
+import { DatabaseProxy } from "./db"
 
 export type Context = {
-  db: Database,
+  db: DatabaseProxy,
+}
+
+export type User = {
+  name: string,
 }
 
