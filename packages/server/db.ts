@@ -41,6 +41,13 @@ export class DatabaseProxy {
   insertUser(user: User) {
     this.conn.run("INSERT INTO users (user_name) VALUES (?);", user.name);
   }
+
+  listUsers(): Array<User> {
+    this.conn.all("SELECT * FROM users;", (rows) => {
+      console.log(`${JSON.stringify(rows)}`)
+    })
+    return [{ name: "testUser" }];
+  }
 }
 
 export function createConnection(): DatabaseProxy {

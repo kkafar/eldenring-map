@@ -7,6 +7,7 @@ import type { AppRouter } from '../../server';
 import categories from './data/categories.json';
 import data from './data/items.json';
 import MapCanvas from './components/MapCanvas';
+import useCounter from './hooks/useCounter';
 import { CategoryMapping, ItemCategory, MarkerDescription, MarkerDescriptionRaw } from './types';
 
 const trpc = createTRPCClient<AppRouter>({
@@ -48,25 +49,68 @@ const preprocessedItemData = preprocessItemData(data);
 const categoryMapping = preprocessCategoryData(categories);
 
 function App() {
-  React.useEffect(() => {
-    async function callback() {
-      let pongResult = await trpc.ping.query();
-      console.log(`Pong result: ${JSON.stringify(pongResult)}`);
+  const [isBackendLive, setIsBackendLive] = React.useState(false);
+  const [apiConnectionAttempts, incrementApiConnectionAttempts] = useCounter(0);
 
-      let userResult = await trpc.createUser.mutate({ userName: 'testUser' });
-      console.log(`createUser result: ${JSON.stringify(userResult)}`);
+  const checkIsApiLive = React.useCallback(async (ac: AbortController) => {
+    console.log('Pinging API for avaibility');
+    trpc.ping.query(undefined, { signal: ac.signal })
+    // trpc.ping.query()
+      .then(_ => {
+        console.log(`Received initial response from server after attempt ${apiConnectionAttempts + 1}`);
+        incrementApiConnectionAttempts();
+        setIsBackendLive(true);
+      }, reason => {
+        console.error(`Ping to server resulted in rejected promise: ${reason}`);
+        incrementApiConnectionAttempts();
+        setIsBackendLive(false);
+      })
+      .catch(error => {
+        console.error(`Ping to server resulted in error: ${error}`);
+        incrementApiConnectionAttempts();
+        setIsBackendLive(false);
+      });
+  }, [setIsBackendLive, incrementApiConnectionAttempts]);
+
+  const apiCallback = React.useCallback(async (ac: AbortController) => {
+    console.log("Executing API callback in App");
+    // let userResult = await trpc.createUser.mutate({ userName: 'testUser' }, { signal: ac.signal });
+    // console.log(`createUser result: ${JSON.stringify(userResult)}`);
+    //
+    // let listUsers = await trpc.listUsers.query(undefined, { signal: ac.signal });
+    // console.log(`listUsers result: ${JSON.stringify(listUsers)}`);
+  }, []);
+
+  React.useEffect(() => {
+    const ac = new AbortController();
+
+    if (!isBackendLive) {
+      checkIsApiLive(ac);
+    } else {
+      apiCallback(ac);
     }
 
-    console.log("Sending ping to server");
-    callback();
-
-  }, []);
+    return () => {
+      ac.abort();
+    }
+  }, [checkIsApiLive, apiCallback]);
 
   return (
     <div>
-      <MapCanvas data={preprocessedItemData} categoryMapping={categoryMapping} />
+      <h1>Elden ring map</h1>
+      {isBackendLive && (
+        <p>Lorem ipsum</p>
+      )}
     </div>
   );
+
+  // return (
+  //   {(isBackendLive && (
+  //     <div>
+  //       <MapCanvas data={preprocessedItemData} categoryMapping={categoryMapping} />
+  //     </div>
+  //   ))}
+  // );
 }
 
 export default App;

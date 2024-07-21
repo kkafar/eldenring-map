@@ -6,6 +6,7 @@ import { z } from 'zod';
 const appRouter = router({
   ping: publicProcedure
     .query(async () => {
+      console.log("Received 'ping' request");
       const response = { data: "pong" };
       return response;
     }),
@@ -16,6 +17,12 @@ const appRouter = router({
     .mutation(async (opts) => {
       const { input, ctx } = opts;
       ctx.db.insertUser({ name: input.userName });
+    }),
+  listUsers: publicProcedure
+    .query(async (opts) => {
+      const { ctx } = opts;
+      const userArray = ctx.db.listUsers();
+      return { data: userArray };
     })
 });
 
