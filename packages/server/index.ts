@@ -23,6 +23,11 @@ const appRouter = router({
       const { ctx } = opts;
       const userArray = ctx.db.listUsers();
       return { data: userArray };
+    }),
+  private_resetDatabase: publicProcedure
+    .query(async (opts) => {
+      const { ctx } = opts;
+      ctx.db.reset();
     })
 });
 

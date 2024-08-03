@@ -2,6 +2,9 @@ console.log("Creating database");
 
 import { Database } from "sqlite3";
 import { User } from "./types";
+import mockUsers from './data/mock-users.json';
+
+const DB_PATH = './data/main.db3';
 
 function initDatabase(db: Database) {
   console.log("Initializing database");
@@ -48,10 +51,29 @@ export class DatabaseProxy {
     })
     return [{ name: "testUser" }];
   }
+
+  _clearDatabase() {
+    console.log("Removing all records from 'users' table");
+    this.conn.run("DELETE FROM users;");
+  }
+
+  _fillWithMockData() {
+    console.log("Filling database with mock data");
+    const statement = this.conn.prepare("INSERT INTO users (user_name) VALUES (?);");
+    mockUsers.forEach(user => {
+      statement.run(user.userName);
+    });
+    statement.finalize();
+  }
+
+  reset() {
+    this._clearDatabase();
+    this._fillWithMockData();
+  }
 }
 
 export function createConnection(): DatabaseProxy {
-  const instance = new Database('./data/main.db3');
+  const instance = new Database(DB_PATH);
   initDatabase(instance);
   return new DatabaseProxy(instance);
 }
