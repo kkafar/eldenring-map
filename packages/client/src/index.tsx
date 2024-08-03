@@ -1,19 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
-import App from './App';
 // import reportWebVitals from './reportWebVitals';
+import { RouterProvider } from 'react-router-dom';
 
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import ErrorPage from './routes/ErrorPage';
-
-const appRouter = createBrowserRouter([
-  {
-    path: '/',
-    element: <App />,
-    errorElement: <ErrorPage />,
-  }
-]);
+import appRouter from './routing';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement

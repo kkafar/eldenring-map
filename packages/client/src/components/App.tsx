@@ -2,14 +2,14 @@ import React from 'react';
 import './App.css';
 
 import { createTRPCClient, httpBatchLink } from '@trpc/client';
-import type { AppRouter } from '../../server';
+import type { AppRouter } from '../../../server';
 
-import categories from './data/categories.json';
-import data from './data/items.json';
-import MapCanvas from './components/MapCanvas';
-import useCounter from './hooks/useCounter';
-import { CategoryMapping, ItemCategory, MarkerDescription, MarkerDescriptionRaw } from './types';
-import { trpc } from './api';
+import categories from '../data/categories.json';
+import data from '../data/items.json';
+import MapCanvas from './MapCanvas';
+import useCounter from '../hooks/useCounter';
+import { CategoryMapping, ItemCategory, MarkerDescription, MarkerDescriptionRaw } from '../types';
+import { trpc } from '../api';
 
 
 function preprocessItemData(data: MarkerDescriptionRaw[]): MarkerDescription[] {
