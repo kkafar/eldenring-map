@@ -9,14 +9,8 @@ import data from './data/items.json';
 import MapCanvas from './components/MapCanvas';
 import useCounter from './hooks/useCounter';
 import { CategoryMapping, ItemCategory, MarkerDescription, MarkerDescriptionRaw } from './types';
+import { trpc } from './api';
 
-const trpc = createTRPCClient<AppRouter>({
-  links: [
-    httpBatchLink({
-      url: 'http://localhost:8088',
-    }),
-  ],
-});
 
 function preprocessItemData(data: MarkerDescriptionRaw[]): MarkerDescription[] {
   // TODO: We need to preprocess image data here also
@@ -47,6 +41,9 @@ function preprocessCategoryData(data: ItemCategory[]): CategoryMapping {
 
 const preprocessedItemData = preprocessItemData(data);
 const categoryMapping = preprocessCategoryData(categories);
+
+const ItemDataContext = React.createContext<MarkerDescription[]>(preprocessedItemData);
+const CategoryMappingContext = React.createContext<CategoryMapping>(categoryMapping);
 
 function App() {
   const [isBackendLive, setIsBackendLive] = React.useState(false);
@@ -96,12 +93,16 @@ function App() {
   }, [checkIsApiLive, apiCallback]);
 
   return (
-    <div>
-      <h1>Elden ring map</h1>
-      {isBackendLive && (
-        <p>Lorem ipsum</p>
-      )}
-    </div>
+    <CategoryMappingContext.Provider value={categoryMapping}>
+      <ItemDataContext.Provider value={preprocessedItemData}>
+        <div>
+          <h1>Elden ring map</h1>
+          {isBackendLive && (
+            <p>Lorem ipsum</p>
+          )}
+        </div>
+      </ItemDataContext.Provider>
+    </CategoryMappingContext.Provider>
   );
 
   // return (
