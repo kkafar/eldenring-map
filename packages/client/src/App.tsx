@@ -9,14 +9,8 @@ import data from './data/items.json';
 import MapCanvas from './components/MapCanvas';
 import useCounter from './hooks/useCounter';
 import { CategoryMapping, ItemCategory, MarkerDescription, MarkerDescriptionRaw } from './types';
+import { trpc } from './api';
 
-const trpc = createTRPCClient<AppRouter>({
-  links: [
-    httpBatchLink({
-      url: 'http://localhost:8088',
-    }),
-  ],
-});
 
 function preprocessItemData(data: MarkerDescriptionRaw[]): MarkerDescription[] {
   // TODO: We need to preprocess image data here also
