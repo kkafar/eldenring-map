@@ -5,6 +5,7 @@ import mapImage from '../assets/maps/m0-overworld-downscaled-4x.png';
 import { CategoryMapping, Frame, MarkerDescription, Position, Size } from '../types';
 
 import './MapCanvas.css';
+import useCounter from '../hooks/useCounter';
 
 type ContentProps = {
   data: MarkerDescription[];
@@ -53,14 +54,14 @@ const positionMapping: Record<MarkerDescription['id'], Frame> = {};
 const visitedMarkers: Set<MarkerDescription['id']> = new Set();
 
 export default function MapCanvas(props: Props) {
-
   const {
     data,
     categoryMapping,
     ...canvasProps
   } = props;
 
-  const [dummyState, setDummyState] = React.useState<number>(0);
+  const [_, triggerRender] = useCounter(0);
+
   const [imageSize, setImageSize] = React.useState<Size>({ width: 0, height: 0 });
 
   const canvasRef = React.useRef<HTMLCanvasElement>(null);
@@ -70,10 +71,6 @@ export default function MapCanvas(props: Props) {
     const image = new Image();
     image.src = mapImage;
     return image;
-  }, []);
-
-  const triggerRender = React.useCallback(() => {
-    setDummyState((old) => old + 1);
   }, []);
 
   const drawItem = React.useCallback((ctx: CanvasRenderingContext2D, frame: Frame, marker: MarkerDescription) => {
@@ -88,8 +85,8 @@ export default function MapCanvas(props: Props) {
     const scaleX = imageSize.width / referenceFrame.size.width;
     const scaleY = imageSize.height / referenceFrame.size.height;
     // console.log(`ScaleX: ${scaleX}, ScaleY: ${scaleY}, imageSize: ${JSON.stringify(imageSize)} referenceFrame: ${JSON.stringify(referenceFrame)}`);
-    // markers.filter(marker => marker.category === 'Locations').forEach(marker => {
-    markers.forEach(marker => {
+    markers.filter(marker => marker.category === 'Locations').forEach(marker => {
+    // markers.forEach(marker => {
       const exactPosition = scalePosition(mapPositionFromMarkerRawPosition(marker.x, marker.y), scaleX, scaleY);
       const markerFrame: Frame = {
         origin: {
@@ -149,12 +146,11 @@ export default function MapCanvas(props: Props) {
     if (!ctx) {
       return;
     }
-
     ctx.clearRect(0, 0, imageSize.width, imageSize.height);
     ctx.drawImage(image, 0, 0);
 
     drawAllMarkers(ctx, props.data, imageSize);
-  }, [imageSize, dummyState, drawAllMarkers, image, props.data]);
+  }, [imageSize, drawAllMarkers, image, props.data]);
 
   return (
     <div>
