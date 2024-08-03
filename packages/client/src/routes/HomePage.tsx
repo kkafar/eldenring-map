@@ -1,11 +1,8 @@
 import React, { useContext } from 'react';
-import categories from '../data/categories.json';
-import data from '../data/items.json';
 import MapCanvas from '../components/MapCanvas';
 import useCounter from '../hooks/useCounter';
 import { CategoryMapping, ItemCategory, MarkerDescription, MarkerDescriptionRaw } from '../types';
 import { trpc } from '../api';
-import { preprocessCategoryData, preprocessItemData } from '../core/tools';
 import ItemDataContext from '../contexts/ItemDataContext';
 import CategoryMappingContext from '../contexts/CategoryMappingContext';
 
@@ -41,8 +38,8 @@ function HomePage() {
     // let userResult = await trpc.createUser.mutate({ userName: 'testUser' }, { signal: ac.signal });
     // console.log(`createUser result: ${JSON.stringify(userResult)}`);
     //
-    // let listUsers = await trpc.listUsers.query(undefined, { signal: ac.signal });
-    // console.log(`listUsers result: ${JSON.stringify(listUsers)}`);
+    let listUsers = await trpc.listUsers.query(undefined, { signal: ac.signal });
+    console.log(`listUsers result: ${JSON.stringify(listUsers)}`);
   }, []);
 
   React.useEffect(() => {
@@ -63,6 +60,7 @@ function HomePage() {
     <div>
       <h1>Elden ring map</h1>
       <p><a href='/login'>Take me to login page</a></p>
+      <p><a href='/admin'>Take me to admin page</a></p>
       {isBackendLive && (
         <p>Lorem ipsum</p>
       )}
