@@ -1,5 +1,6 @@
 import React from 'react'
 import { trpc } from '../api';
+import GoBackHomeLink from '../components/GoBackHomeLink';
 
 export default function AdminPanelPage() {
   const onResetDbClick = React.useCallback(() => {
@@ -10,7 +11,7 @@ export default function AdminPanelPage() {
   return (
     <div>
       <h1>Admin panel</h1>
-      <p><a href='/'>Go to <strong>HomePage</strong></a></p>
+      <GoBackHomeLink />
       <h3>Database actions</h3>
       <div>
         <ul>
