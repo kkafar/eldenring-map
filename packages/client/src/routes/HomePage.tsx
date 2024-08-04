@@ -5,6 +5,8 @@ import { CategoryMapping, ItemCategory, MarkerDescription, MarkerDescriptionRaw 
 import { trpc } from '../api';
 import ItemDataContext from '../contexts/ItemDataContext';
 import CategoryMappingContext from '../contexts/CategoryMappingContext';
+import { User } from '../../../server/types';
+import UserListElement from '../components/UserListElement';
 
 function HomePage() {
   const preprocessedItemData = useContext<MarkerDescription[]>(ItemDataContext);
@@ -12,6 +14,8 @@ function HomePage() {
 
   const [isBackendLive, setIsBackendLive] = React.useState(false);
   const [apiConnectionAttempts, incrementApiConnectionAttempts] = useCounter(0);
+
+  const [userList, setUserList] = React.useState<User[] | null>(null);
 
   const checkIsApiLive = React.useCallback(async (ac: AbortController) => {
     console.log('Pinging API for avaibility');
@@ -35,21 +39,21 @@ function HomePage() {
 
   const apiCallback = React.useCallback(async (ac: AbortController) => {
     console.log("Executing API callback in App");
-    // let userResult = await trpc.createUser.mutate({ userName: 'testUser' }, { signal: ac.signal });
-    // console.log(`createUser result: ${JSON.stringify(userResult)}`);
-    //
-    let listUsers = await trpc.listUsers.query(undefined, { signal: ac.signal });
+    let listUsers: { data: User[] } = await trpc.listUsers.query(undefined, { signal: ac.signal });
     console.log(`listUsers result: ${JSON.stringify(listUsers)}`);
+    setUserList(listUsers.data);
+    setIsBackendLive(true);
   }, []);
 
   React.useEffect(() => {
     const ac = new AbortController();
 
-    if (!isBackendLive) {
-      checkIsApiLive(ac);
-    } else {
-      apiCallback(ac);
-    }
+    // if (!isBackendLive) {
+    //   checkIsApiLive(ac);
+    // } else {
+    //   apiCallback(ac);
+    // }
+    apiCallback(ac);
 
     return () => {
       ac.abort();
@@ -62,7 +66,12 @@ function HomePage() {
       <p><a href='/login'>Take me to login page</a></p>
       <p><a href='/admin'>Take me to admin page</a></p>
       {isBackendLive && (
-        <p>Lorem ipsum</p>
+        <p>Backend is live and well</p>
+      )}
+      {userList !== null && (
+        <ul>
+          {userList.map((user, index) => <UserListElement key={index.toString()} name={user.name} />)}
+        </ul>
       )}
     </div>
   );
