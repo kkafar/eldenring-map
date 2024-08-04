@@ -5,7 +5,14 @@ export default function UserProfilePage() {
   const { userName } = useParams();
 
   return (
-    <div>{userName} profiles page</div>
+    <div>
+      <p>
+        {userName} profiles page
+      </p>
+      <p>
+        <a href='/'>Go back to <strong>HomePage</strong></a>
+      </p>
+    </div>
   )
 }
 
