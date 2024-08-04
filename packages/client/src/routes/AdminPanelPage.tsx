@@ -10,6 +10,7 @@ export default function AdminPanelPage() {
   return (
     <div>
       <h1>Admin panel</h1>
+      <p><a href='/'>Go to <strong>HomePage</strong></a></p>
       <h3>Database actions</h3>
       <div>
         <ul>

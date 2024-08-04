@@ -21,7 +21,7 @@ const appRouter = router({
   listUsers: publicProcedure
     .query(async (opts) => {
       const { ctx } = opts;
-      const userArray = ctx.db.listUsers();
+      const userArray = await ctx.db.listUsers();
       return { data: userArray };
     }),
   private_resetDatabase: publicProcedure
