@@ -5,8 +5,8 @@ import { CategoryMapping, ItemCategory, MarkerDescription, MarkerDescriptionRaw 
 import { trpc } from '../api';
 import ItemDataContext from '../contexts/ItemDataContext';
 import CategoryMappingContext from '../contexts/CategoryMappingContext';
-import { User } from '../../../server/types';
-import UserListElement from '../components/UserListElement';
+import type { User } from '../../../server/types';
+import UserListItem from '../components/UserListItem';
 
 function HomePage() {
   const preprocessedItemData = useContext<MarkerDescription[]>(ItemDataContext);
@@ -70,7 +70,7 @@ function HomePage() {
       )}
       {userList !== null && (
         <ul>
-          {userList.map((user, index) => <UserListElement key={index.toString()} name={user.name} />)}
+          {userList.map((user, index) => <UserListItem key={index.toString()} name={user.name} />)}
         </ul>
       )}
     </div>

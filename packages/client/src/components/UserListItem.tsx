@@ -1,11 +1,11 @@
 import React from 'react'
-import { User } from '../../../server/types'
+import type { User } from '../../../server/types'
 
 export type UserListElementProps = User & {
   key?: string
 };
 
-export default function UserListElement(props: UserListElementProps) {
+export default function UserListItem(props: UserListElementProps) {
   const {
     key,
     name
