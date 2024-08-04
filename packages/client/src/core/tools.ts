@@ -1,4 +1,4 @@
-import { CategoryMapping, ItemCategory, MarkerDescription, MarkerDescriptionRaw } from "../types";
+import { CategoryMapping, Frame, ItemCategory, MarkerDescription, MarkerDescriptionRaw, Position } from "../types";
 
 export function preprocessItemData(data: MarkerDescriptionRaw[]): MarkerDescription[] {
   // TODO: We need to preprocess image data here also
@@ -25,5 +25,25 @@ export function preprocessCategoryData(data: ItemCategory[]): CategoryMapping {
   });
 
   return result as CategoryMapping;
+}
+
+export function getViewportPosition(): Position {
+  return {
+    x: window.scrollX,
+    y: window.scrollY,
+  }
+}
+
+/**
+ * Returns viewport frame in window coordinate space
+ */
+export function getViewportFrame(): Frame {
+  return {
+    origin: getViewportPosition(),
+    size: {
+      width: window.innerWidth,
+      height: window.innerHeight,
+    }
+  }
 }
 
