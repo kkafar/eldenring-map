@@ -1,5 +1,4 @@
-import App from '../App';
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { createBrowserRouter } from 'react-router-dom';
 import ErrorPage from '../routes/ErrorPage';
 import LoginPage from '../routes/LoginPage';
 import HomePage from '../routes/HomePage';
