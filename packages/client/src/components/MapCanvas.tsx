@@ -2,7 +2,7 @@ import React from 'react';
 
 import mapImage from '../assets/maps/m0-overworld-downscaled-4x.png';
 // import mapImage from '../assets/maps/m0-overworld.png';
-import { CategoryMapping, Frame, MarkerDescription, Position, Size } from '../types';
+import { CategoryMapping, Frame, GridCoords, MarkerDescription, Point, Position, Size } from '../types';
 
 import './MapCanvas.css';
 import useCounter from '../hooks/useCounter';
@@ -63,27 +63,61 @@ const markerHeight = 20;
 const positionMapping: Record<MarkerDescription['id'], Frame> = {};
 const visitedMarkers: Set<MarkerDescription['id']> = new Set();
 
-function drawTile(ctx: CanvasRenderingContext2D, tile: MapTile) {
-  ctx.drawImage(tile.bitmap, tile.frame.origin.x, tile.frame.origin.y);
-  ctx.strokeStyle = 'green';
-  ctx.strokeRect(tile.frame.origin.x, tile.frame.origin.y, tile.frame.size.width, tile.frame.size.height);
+function findTileIndexForPoint(point: Point, tileSize: Size): GridCoords {
+  return {
+    row: Math.floor(point.y / tileSize.height),
+    col: Math.floor(point.x / tileSize.width),
+  }
+  // const column = Math.floor(point.x / tileSize.width);
+  // const row = Math.floor(point.y / tileSize.height);
+  // return row * TILES_ROW + column;
 }
 
-function tilesFilter(tile: MapTile): boolean {
-  const viewportFrame = getViewportFrame();
-  const returnValue = (tile.frame.origin.x + tile.frame.size.width >= viewportFrame.origin.x &&
-    tile.frame.origin.x <= viewportFrame.origin.x + viewportFrame.size.width) &&
-    (tile.frame.origin.y + tile.frame.size.height >= viewportFrame.origin.y &&
-    tile.frame.origin.y <= viewportFrame.origin.y + viewportFrame.size.height);
+function drawTile(ctx: CanvasRenderingContext2D, tile: MapTile) {
+  ctx.drawImage(tile.bitmap, tile.frame.origin.x, tile.frame.origin.y);
+  // ctx.strokeStyle = 'green';
+  // ctx.strokeRect(tile.frame.origin.x, tile.frame.origin.y, tile.frame.size.width, tile.frame.size.height);
+}
 
-  // if (returnValue) {
-  //   console.log(`Accept tile at ${JSON.stringify(tile.frame)}, viewport: ${JSON.stringify(viewportFrame)}`);
-  // } else {
-  //   console.log(`Reject tile at ${JSON.stringify(tile.frame)}, viewport: ${JSON.stringify(viewportFrame)}`);
-  //
-  // }
+function drawGrid(ctx: CanvasRenderingContext2D, tileSet: MapTile[]) {
+  ctx.strokeStyle = 'green';
+  ctx.fillStyle = 'rgb(255 0 0 / 100%)';
+  ctx.font = 'bold 24px serif';
+  tileSet.forEach((tile, index) => {
+    ctx.strokeRect(tile.frame.origin.x, tile.frame.origin.y, tile.frame.size.width, tile.frame.size.height)
+    const col = Math.floor(index / TILES_ROW);
+    const row = index % TILES_COL;
+    ctx.fillText(`${row}x${col}, i: ${index}`, tile.frame.origin.x + 5, tile.frame.origin.y + 30);
+  });
+}
 
-  return returnValue;
+function drawMap(ctx: CanvasRenderingContext2D, tileSet: MapTile[], viewportFrame: Frame) {
+  if (tileSet.length === 0) {
+    console.error("Aborting drawMap operation due to empty tile set");
+    return;
+  }
+
+  const tileSize = tileSet[0].frame.size;
+  const viewportEndpoint: Point = {
+    x: viewportFrame.origin.x + viewportFrame.size.width,
+    y: viewportFrame.origin.y + viewportFrame.size.height,
+  }
+  const topLeftTileCoords = findTileIndexForPoint(viewportFrame.origin, tileSize);
+  const bottomRightTileCoords = findTileIndexForPoint(viewportEndpoint, tileSize);
+
+  console.log(`tileSize: ${JSON.stringify(tileSize)}, topleft: ${JSON.stringify(viewportFrame.origin)} -> ${JSON.stringify(topLeftTileCoords)}, bottomright: ${JSON.stringify(viewportEndpoint)} -> ${JSON.stringify(bottomRightTileCoords)}`)
+  const rowStartIndex = Math.max(topLeftTileCoords.row - 1, 0);
+  const rowEndIndex = Math.min(bottomRightTileCoords.row + 1, TILES_ROW - 1);
+  const colStartIndex = Math.max(topLeftTileCoords.col - 1, 0);
+  const colEndIndex = Math.min(bottomRightTileCoords.col + 1, TILES_COL - 1);
+
+  for (let ri = rowStartIndex; ri <= rowEndIndex; ri++) {
+    for (let ci = colStartIndex; ci <= colEndIndex; ci++) {
+      console.log(`Drawing tile ${ri * TILES_ROW + ci} at ${ri}x${ci}`);
+      drawTile(ctx, tileSet[ri * TILES_ROW + ci]);
+    }
+  }
+  drawGrid(ctx, tileSet);
 }
 
 export default function MapCanvas(props: Props) {
@@ -121,8 +155,8 @@ export default function MapCanvas(props: Props) {
     const scaleX = imageSize.width / referenceFrame.size.width;
     const scaleY = imageSize.height / referenceFrame.size.height;
     // console.log(`ScaleX: ${scaleX}, ScaleY: ${scaleY}, imageSize: ${JSON.stringify(imageSize)} referenceFrame: ${JSON.stringify(referenceFrame)}`);
-    markers.filter(marker => marker.category === 'Locations').forEach(marker => {
-      // markers.forEach(marker => {
+    // markers.filter(marker => marker.category === 'Locations').forEach(marker => {
+    markers.forEach(marker => {
       const exactPosition = scalePosition(mapPositionFromMarkerRawPosition(marker.x, marker.y), scaleX, scaleY);
       const markerFrame: Frame = {
         origin: {
@@ -149,19 +183,21 @@ export default function MapCanvas(props: Props) {
 
     tileSet.current = await Promise.all([...Array(TILES_ROW * TILES_COL).keys()].map(i => {
       const origin = {
-        x: Math.floor(i / TILES_COL) * tileSize.width,
-        y: Math.floor(i % TILES_ROW) * tileSize.height,
+        x: (i % TILES_COL) * tileSize.width,
+        y: Math.floor(i / TILES_ROW) * tileSize.height,
       }
-      return new Promise<MapTile>(async (resolve) => {
-        resolve({
-          bitmap: await createImageBitmap(image, origin.x, origin.y, tileSize.width, tileSize.height),
+      return new Promise<MapTile>((resolve) => {
+        console.log('Executing another promise');
+        createImageBitmap(image, origin.x, origin.y, tileSize.width, tileSize.height).then(result => resolve({
+          bitmap: result,
           frame: {
             origin: origin,
             size: tileSize,
           }
-        })
+        }))
       })
     }));
+
   }, [image]);
 
   const handleClick = React.useCallback((event: MouseEvent) => {
@@ -185,6 +221,7 @@ export default function MapCanvas(props: Props) {
 
   const handleMouseUp = React.useCallback((event: React.MouseEvent<HTMLCanvasElement>) => {
     isMouseDown.current = false;
+    performDrawing();
     // console.log("MouseUp");
   }, []);
 
@@ -197,6 +234,31 @@ export default function MapCanvas(props: Props) {
 
   const handleWheel = React.useCallback((event: React.MouseEvent<HTMLCanvasElement>) => {
   }, []);
+
+  const performDrawing = React.useCallback(() => {
+    console.log("Performing drawing");
+
+    if (!canvasRef.current) {
+      console.warn("Drawing canceled due to null canvas ref");
+      return;
+    }
+
+    const ctx = canvasRef.current.getContext("2d");
+
+    if (!ctx) {
+      console.error("Failed to get canvas drawing context");
+      return;
+    }
+
+    if (!tileSet.current) {
+      console.warn("Missing tileset");
+      return;
+    }
+
+    ctx.clearRect(0, 0, imageSize.width, imageSize.height);
+    drawMap(ctx, tileSet.current, getViewportFrame());
+    drawAllMarkers(ctx, props.data, imageSize);
+  }, [canvasRef, canvasRef.current, imageSize, tileSet, props.data, drawAllMarkers]);
 
   React.useEffect(() => {
     window.addEventListener('click', handleClick);
@@ -214,23 +276,8 @@ export default function MapCanvas(props: Props) {
   }, [image, handleImageLoad]);
 
   React.useEffect(() => {
-    if (!canvasRef.current) {
-      return;
-    }
-
-    const ctx = canvasRef.current.getContext("2d");
-
-    if (!ctx) {
-      return;
-    }
-
-    ctx.clearRect(0, 0, imageSize.width, imageSize.height);
-
-    // ctx.drawImage(image, 0, 0);
-    tileSet.current?.filter(tilesFilter).forEach(tile => drawTile(ctx, tile));
-
-    drawAllMarkers(ctx, props.data, imageSize);
-  }, [renderKey, imageSize, drawAllMarkers, image, props.data]);
+    performDrawing();
+  }, [renderKey, canvasRef, canvasRef.current, imageSize, tileSet, props.data, drawAllMarkers]);
 
   if (imageSize.width === 0) {
     return (
