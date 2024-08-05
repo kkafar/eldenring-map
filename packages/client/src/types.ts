@@ -62,8 +62,15 @@ export type Position = {
   y: number,
 }
 
+export type Point = Position;
+
 export type Frame = {
   origin: Position,
   size: Size,
+}
+
+export type GridCoords = {
+  row: number,
+  col: number,
 }
 

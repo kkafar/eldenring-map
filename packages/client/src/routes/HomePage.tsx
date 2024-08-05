@@ -65,6 +65,7 @@ function HomePage() {
       <h1>Elden ring map</h1>
       <p><a href='/login'>Take me to login page</a></p>
       <p><a href='/admin'>Take me to admin page</a></p>
+      <p><a href='/dev-map'>Take me to map page</a></p>
       {isBackendLive && (
         <p>Backend is live and well</p>
       )}

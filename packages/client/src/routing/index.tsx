@@ -4,6 +4,7 @@ import LoginPage from '../routes/LoginPage';
 import HomePage from '../routes/HomePage';
 import AdminPanelPage from '../routes/AdminPanelPage';
 import UserProfilePage, { loadDataUserProfilePage } from '../routes/UserProfilePage';
+import MapDevPage from '../routes/MapDevPage';
 
 const appRouter = createBrowserRouter([
   {
@@ -26,6 +27,11 @@ const appRouter = createBrowserRouter([
     element: <UserProfilePage />,
     errorElement: <ErrorPage />,
     loader: loadDataUserProfilePage,
+  },
+  {
+    path: '/dev-map',
+    element: <MapDevPage />,
+    errorElement: <ErrorPage />
   }
 ]);
 

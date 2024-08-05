@@ -7,14 +7,13 @@ export type UserListElementProps = User & {
 
 export default function UserListItem(props: UserListElementProps) {
   const {
-    key,
     name
   } = props;
 
   const userPageRoute = `/user/${name}`;
 
   return (
-    <li key={key}>
+    <li>
       <a href={userPageRoute}>
         {name}
       </a>
