@@ -152,6 +152,7 @@ export default function MapCanvas(props: Props) {
   }, []);
 
   const drawAllMarkers = React.useCallback((ctx: CanvasRenderingContext2D, markers: MarkerDescription[], imageSize: Size) => {
+    console.log("Drawing markers");
     const scaleX = imageSize.width / referenceFrame.size.width;
     const scaleY = imageSize.height / referenceFrame.size.height;
     // console.log(`ScaleX: ${scaleX}, ScaleY: ${scaleY}, imageSize: ${JSON.stringify(imageSize)} referenceFrame: ${JSON.stringify(referenceFrame)}`);
