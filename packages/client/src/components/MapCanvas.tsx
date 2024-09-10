@@ -37,7 +37,7 @@ const referenceFrame: Frame = {
   },
 }
 
-const TILE_COUNT = 8;
+const TILE_COUNT = 4;
 const TILES_ROW = TILE_COUNT;
 const TILES_COL = TILE_COUNT;
 
@@ -68,9 +68,14 @@ function findTileIndexForPoint(point: Point, tileSize: Size): GridCoords {
     row: Math.floor(point.y / tileSize.height),
     col: Math.floor(point.x / tileSize.width),
   }
-  // const column = Math.floor(point.x / tileSize.width);
-  // const row = Math.floor(point.y / tileSize.height);
-  // return row * TILES_ROW + column;
+}
+
+function drawMarker(ctx: CanvasRenderingContext2D, frame: Frame, marker: MarkerDescription) {
+  // I need to take some item description here
+  // console.log(`Drawing location: ${marker.name} from { x: ${marker.y}, y: ${marker.x} } at ${JSON.stringify(frame.origin)}`)
+  const fillStyleLiteral = visitedMarkers.has(marker.id) ? "rgb(0 0 255 / 50%)" : "rgb(255 0 0 / 50%)";
+  ctx.fillStyle = fillStyleLiteral;
+  ctx.fillRect(frame.origin.x, frame.origin.y, frame.size.width, frame.size.height);
 }
 
 function drawTile(ctx: CanvasRenderingContext2D, tile: MapTile) {
@@ -85,15 +90,15 @@ function drawGrid(ctx: CanvasRenderingContext2D, tileSet: MapTile[]) {
   ctx.font = 'bold 24px serif';
   tileSet.forEach((tile, index) => {
     ctx.strokeRect(tile.frame.origin.x, tile.frame.origin.y, tile.frame.size.width, tile.frame.size.height)
-    const col = Math.floor(index / TILES_ROW);
-    const row = index % TILES_COL;
+    const row = Math.floor(index / TILES_ROW);
+    const col = index % TILES_COL;
     ctx.fillText(`${row}x${col}, i: ${index}`, tile.frame.origin.x + 5, tile.frame.origin.y + 30);
   });
 }
 
 function drawMap(ctx: CanvasRenderingContext2D, tileSet: MapTile[], viewportFrame: Frame) {
-  if (tileSet.length === 0) {
-    console.error("Aborting drawMap operation due to empty tile set");
+  if (!tileSet || tileSet.length === 0) {
+    console.error("Aborting drawMap operation due to empty / nil tile set");
     return;
   }
 
@@ -105,7 +110,6 @@ function drawMap(ctx: CanvasRenderingContext2D, tileSet: MapTile[], viewportFram
   const topLeftTileCoords = findTileIndexForPoint(viewportFrame.origin, tileSize);
   const bottomRightTileCoords = findTileIndexForPoint(viewportEndpoint, tileSize);
 
-  console.log(`tileSize: ${JSON.stringify(tileSize)}, topleft: ${JSON.stringify(viewportFrame.origin)} -> ${JSON.stringify(topLeftTileCoords)}, bottomright: ${JSON.stringify(viewportEndpoint)} -> ${JSON.stringify(bottomRightTileCoords)}`)
   const rowStartIndex = Math.max(topLeftTileCoords.row - 1, 0);
   const rowEndIndex = Math.min(bottomRightTileCoords.row + 1, TILES_ROW - 1);
   const colStartIndex = Math.max(topLeftTileCoords.col - 1, 0);
@@ -113,7 +117,7 @@ function drawMap(ctx: CanvasRenderingContext2D, tileSet: MapTile[], viewportFram
 
   for (let ri = rowStartIndex; ri <= rowEndIndex; ri++) {
     for (let ci = colStartIndex; ci <= colEndIndex; ci++) {
-      console.log(`Drawing tile ${ri * TILES_ROW + ci} at ${ri}x${ci}`);
+      // console.log(`Drawing tile ${ri * TILES_ROW + ci} at ${ri}x${ci}`);
       drawTile(ctx, tileSet[ri * TILES_ROW + ci]);
     }
   }
@@ -137,19 +141,15 @@ export default function MapCanvas(props: Props) {
   const canvasRef = React.useRef<HTMLCanvasElement>(null);
   const dialogRef = React.useRef<HTMLDivElement>(null);
 
+  // const bitmapWorker = React.useRef<Worker>(new Worker(new URL('../core/workers/bitmaploaderworker.js', import.meta.url), {
+  //   type: 'module',
+  // }));
+
   const image = React.useMemo(() => {
     const image = new Image();
     image.src = mapImage;
     return image;
   }, [mapImage]);
-
-  const drawItem = React.useCallback((ctx: CanvasRenderingContext2D, frame: Frame, marker: MarkerDescription) => {
-    // I need to take some item description here
-    // console.log(`Drawing location: ${marker.name} from { x: ${marker.y}, y: ${marker.x} } at ${JSON.stringify(frame.origin)}`)
-    const fillStyleLiteral = visitedMarkers.has(marker.id) ? "rgb(0 0 255 / 50%)" : "rgb(255 0 0 / 50%)";
-    ctx.fillStyle = fillStyleLiteral;
-    ctx.fillRect(frame.origin.x, frame.origin.y, frame.size.width, frame.size.height);
-  }, []);
 
   const drawAllMarkers = React.useCallback((ctx: CanvasRenderingContext2D, markers: MarkerDescription[], imageSize: Size) => {
     console.log("Drawing markers");
@@ -170,9 +170,9 @@ export default function MapCanvas(props: Props) {
         },
       }
       positionMapping[marker.id] = markerFrame;
-      drawItem(ctx, markerFrame, marker);
+      drawMarker(ctx, markerFrame, marker);
     });
-  }, [drawItem]);
+  }, []);
 
   const handleImageLoad = React.useCallback(async () => {
     console.log(`Setting imageSize to ${image.naturalWidth} x ${image.naturalHeight}`);
