@@ -1,7 +1,7 @@
 import React from 'react';
 
-import mapImage from '../assets/maps/m0-overworld-downscaled-4x.png';
-// import mapImage from '../assets/maps/m0-overworld.png';
+// import mapImage from '../assets/maps/m0-overworld-downscaled-4x.png';
+import mapImage from '../assets/maps/m0-overworld.png';
 import { CategoryMapping, Frame, GridCoords, MarkerDescription, Point, Position, Size } from '../types';
 
 import './MapCanvas.css';
@@ -97,6 +97,7 @@ function drawGrid(ctx: CanvasRenderingContext2D, tileSet: MapTile[]) {
 }
 
 function drawMap(ctx: CanvasRenderingContext2D, tileSet: MapTile[], viewportFrame: Frame) {
+  console.info("Drawing map")
   if (!tileSet || tileSet.length === 0) {
     console.error("Aborting drawMap operation due to empty / nil tile set");
     return;
@@ -117,7 +118,7 @@ function drawMap(ctx: CanvasRenderingContext2D, tileSet: MapTile[], viewportFram
 
   for (let ri = rowStartIndex; ri <= rowEndIndex; ri++) {
     for (let ci = colStartIndex; ci <= colEndIndex; ci++) {
-      // console.log(`Drawing tile ${ri * TILES_ROW + ci} at ${ri}x${ci}`);
+      console.log(`Drawing tile ${ri * TILES_ROW + ci} at ${ri}x${ci}`);
       drawTile(ctx, tileSet[ri * TILES_ROW + ci]);
     }
   }
