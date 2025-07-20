@@ -10,5 +10,11 @@ export default defineConfig({
     port: 3000,
   },
   plugins: [react()],
+  worker: {
+    format: 'es',
+    plugins() {
+      return []
+    },
+  }
 });
 

@@ -253,7 +253,7 @@ export default function MapCanvas(props: Props) {
     }
 
     if (!tileSet.current) {
-      console.warn("Missing tileset");
+      console.error("Missing tileset");
       return;
     }
 
