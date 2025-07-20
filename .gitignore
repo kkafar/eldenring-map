@@ -32,5 +32,6 @@ data/
 DS_Store
 assets/
 pages/
+.tanstack/
 
 

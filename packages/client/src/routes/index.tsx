@@ -7,8 +7,13 @@ import ItemDataContext from '../contexts/ItemDataContext';
 import CategoryMappingContext from '../contexts/CategoryMappingContext';
 import type { User } from '../../../server/types';
 import UserListItem from '../components/UserListItem';
+import { createFileRoute } from '@tanstack/react-router'
 
-function HomePage() {
+export const Route = createFileRoute('/')({
+  component: Index,
+})
+
+function Index() {
   const preprocessedItemData = useContext<MarkerDescription[]>(ItemDataContext);
   const categoryMapping = useContext<CategoryMapping>(CategoryMappingContext);
 
@@ -20,7 +25,7 @@ function HomePage() {
   const checkIsApiLive = React.useCallback(async (ac: AbortController) => {
     console.log('Pinging API for avaibility');
     trpc.ping.query(undefined, { signal: ac.signal })
-    // trpc.ping.query()
+      // trpc.ping.query()
       .then(_ => {
         console.log(`Received initial response from server after attempt ${apiConnectionAttempts + 1}`);
         incrementApiConnectionAttempts();
@@ -65,7 +70,8 @@ function HomePage() {
       <h1>Elden ring map</h1>
       <p><a href='/login'>Take me to login page</a></p>
       <p><a href='/admin'>Take me to admin page</a></p>
-      <p><a href='/dev-map'>Take me to map page</a></p>
+      <p><a href='/map/v1'>Take me to map page (v1)</a></p>
+      <p><a href='/map/v2'>Take me to map page (v2)</a></p>
       {isBackendLive && (
         <p>Backend is live and well</p>
       )}
@@ -76,15 +82,5 @@ function HomePage() {
       )}
     </div>
   );
-
-  // return (
-  //   {(isBackendLive && (
-  //     <div>
-  //       <MapCanvas data={preprocessedItemData} categoryMapping={categoryMapping} />
-  //     </div>
-  //   ))}
-  // );
 }
-
-export default HomePage;
 
