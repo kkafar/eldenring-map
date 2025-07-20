@@ -1,10 +1,6 @@
 {
   "name": "eldenring-map",
   "private": true,
-  "workspaces": [
-    "client",
-    "server"
-  ],
   "scripts": {
     "build:client": "npm run build -w client",
     "build:server": "npm run build -w server",
