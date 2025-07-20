@@ -18,13 +18,13 @@ const appRouter = router({
     .mutation(async (opts) => {
       console.log("Received 'createUser' request");
       const { input, ctx } = opts;
-      ctx.db.insertUser({ name: input.userName });
+      ctx.db.createUser({ name: input.userName });
     }),
   listUsers: publicProcedure
     .query(async (opts) => {
       console.log("Received 'listUsers' request");
       const { ctx } = opts;
-      const userArray = await ctx.db.listUsers();
+      const userArray = await ctx.db.fetchUsers();
       return { data: userArray };
     }),
   listUserProfiles: publicProcedure
@@ -32,13 +32,14 @@ const appRouter = router({
     .query(async (opts) => {
       console.log("Received 'listUserProfiles' request");
       const { ctx, input } = opts;
-      return { data: await ctx.db.listUserProfiles({ name: input.name }) };
+      return { data: await ctx.db.fetchUserProfiles({ name: input.name }) };
     }),
   private_resetDatabase: publicProcedure
     .query(async (opts) => {
       console.log("Received 'private_resetDatabase' request");
       const { ctx } = opts;
-      ctx.db.reset();
+      // TODO: Implement this if needed.
+      // ctx.db.reset();
     })
 });
 

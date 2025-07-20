@@ -5,7 +5,7 @@ import { CategoryMapping, ItemCategory, MarkerDescription, MarkerDescriptionRaw 
 import { trpc } from '../api';
 import ItemDataContext from '../contexts/ItemDataContext';
 import CategoryMappingContext from '../contexts/CategoryMappingContext';
-import type { User } from '../../../server/types';
+import type { User } from '../../../server/src/types';
 import UserListItem from '../components/UserListItem';
 import { createFileRoute } from '@tanstack/react-router'
 

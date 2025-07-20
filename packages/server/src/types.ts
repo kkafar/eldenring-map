@@ -1,9 +1,9 @@
 import { z } from "zod"
-import { DatabaseProxy } from "./db"
 import { UserSchema } from "./schemas"
+import { DataStore } from "./db/data-store";
 
 export type Context = {
-  db: DatabaseProxy,
+  db: DataStore,
 }
 
 export type User = z.infer<typeof UserSchema>;
