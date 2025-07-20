@@ -1,10 +1,10 @@
 import { createBrowserRouter } from 'react-router-dom';
-import ErrorPage from '../routes/ErrorPage';
-import LoginPage from '../routes/LoginPage';
-import HomePage from '../routes/HomePage';
-import AdminPanelPage from '../routes/AdminPanelPage';
+import ErrorPage from '../routes/legacy/ErrorPage';
+import LoginPage from '../routes/legacy/LoginPage';
+import HomePage from '../routes/legacy/HomePage';
+import AdminPanelPage from '../routes/legacy/AdminPanelPage';
 import UserProfilePage, { loadDataUserProfilePage } from '../routes/UserProfilePage';
-import MapDevPage from '../routes/MapDevPage';
+import MapDevPage from '../routes/legacy/MapDevPage';
 
 const appRouter = createBrowserRouter([
   {
