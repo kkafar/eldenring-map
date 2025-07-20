@@ -1,11 +1,16 @@
 import React from 'react'
-import { trpc } from '../api';
+import { trpcClient } from '../api';
 import GoBackHomeLink from '../components/GoBackHomeLink';
+import { createFileRoute } from '@tanstack/react-router'
 
-export default function AdminPanelPage() {
+export const Route = createFileRoute('/admin')({
+  component: RouteComponent,
+})
+
+function RouteComponent() {
   const onResetDbClick = React.useCallback(() => {
     console.log("Reseting databse");
-    trpc.private_resetDatabase.query()
+    trpcClient.private_resetDatabase.query();
   }, []);
 
   return (
@@ -25,4 +30,3 @@ export default function AdminPanelPage() {
     </div>
   )
 }
-

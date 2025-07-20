@@ -1,39 +1,38 @@
-import { createBrowserRouter } from 'react-router-dom';
-import ErrorPage from '../routes/legacy/ErrorPage';
-import LoginPage from '../routes/legacy/LoginPage';
-import HomePage from '../routes/legacy/HomePage';
-import AdminPanelPage from '../routes/legacy/AdminPanelPage';
-import UserProfilePage, { loadDataUserProfilePage } from '../routes/UserProfilePage';
-import MapDevPage from '../routes/legacy/MapDevPage';
+import { createRouter } from "@tanstack/react-router";
+import { routeTree } from "../routeTree.gen";
+import { queryClient, trpc, trpcClient } from "../api";
+import { QueryClientProvider } from "@tanstack/react-query";
 
-const appRouter = createBrowserRouter([
-  {
-    path: '/',
-    element: <HomePage />,
-    errorElement: <ErrorPage />,
-  },
-  {
-    path: '/login',
-    element: <LoginPage />,
-    errorElement: <ErrorPage />,
-  },
-  {
-    path: '/admin',
-    element: <AdminPanelPage />,
-    errorElement: <ErrorPage />
-  },
-  {
-    path: '/user/:userName',
-    element: <UserProfilePage />,
-    errorElement: <ErrorPage />,
-    loader: loadDataUserProfilePage,
-  },
-  {
-    path: '/dev-map',
-    element: <MapDevPage />,
-    errorElement: <ErrorPage />
+export function createMainRouter() {
+  const router = createRouter({
+    routeTree,
+    scrollRestoration: true,
+    defaultPreload: 'intent',
+    context: {
+      trpc,
+      queryClient,
+      trpcClient,
+    },
+    defaultPendingComponent: () => {
+      return (
+        <div>Loading...</div>
+      );
+    },
+    Wrap: function WrapComponent({ children }) {
+      return (
+        <QueryClientProvider client={queryClient}>
+          {children}
+        </QueryClientProvider>
+      )
+    }
+  });
+
+  return router;
+}
+
+// Register the router instance for type safety
+declare module '@tanstack/react-router' {
+  interface Register {
+    router: ReturnType<typeof createMainRouter>
   }
-]);
-
-export default appRouter;
-
+}
