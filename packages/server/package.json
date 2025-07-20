@@ -13,13 +13,11 @@
     "cors": "^2.8.5",
     "dotenv": "^17.2.0",
     "drizzle-orm": "^0.44.3",
-    "sqlite3": "^5.1.7",
     "zod": "^4.0.5"
   },
   "devDependencies": {
     "@types/cors": "^2.8.13",
     "@types/node": "^20.10.0",
-    "@types/sqlite3": "3.1.11",
     "drizzle-kit": "^0.31.4",
     "tsx": "^4.20.3",
     "typescript": "^5.5.0"
