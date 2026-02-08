@@ -1,8 +1,8 @@
 import { drizzle } from "drizzle-orm/libsql";
-import { createClient } from "@libsql/client/.";
-import { User, Profile } from "../types";
+import { createClient } from "@libsql/client";
+import { User, UserProfile } from "../types";
 import { DataStore } from "./data-store";
-import { profilesTable, usersTable } from "./schema/sqlite";
+import { profilesTable, ProfilesTableInsert, usersTable } from "./schema/sqlite";
 import { eq, getTableColumns } from "drizzle-orm";
 
 export function createDrizzleAdapter() {
@@ -21,8 +21,12 @@ export class DataStoreSqliteImpl implements DataStore {
     this.driver = driver;
   }
 
-  createUser(user: User): void {
+  async createUser(user: User): Promise<void> {
     this.driver.insert(usersTable).values(user).onConflictDoNothing();
+  }
+
+  async addUserProfile(profile: ProfilesTableInsert): Promise<void> {
+    this.driver.insert(profilesTable).values(profile).onConflictDoNothing();
   }
 
   async fetchUsers(): Promise<User[]> {
@@ -30,11 +34,11 @@ export class DataStoreSqliteImpl implements DataStore {
     return result;
   }
 
-  async fetchUserProfiles(user: User): Promise<Profile[]> {
+  async fetchUserProfiles(user: User): Promise<UserProfile[]> {
     const result = await this.driver
       .select(getTableColumns(profilesTable))
       .from(profilesTable)
       .where(eq(profilesTable.userName, user.name));
-    return result.map(fullProfile => ({ name: fullProfile.profileName }));
+    return result.map((fullProfile) => ({ profileName: fullProfile.profileName }));
   }
 }
