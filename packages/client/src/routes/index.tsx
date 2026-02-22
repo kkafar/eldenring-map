@@ -84,20 +84,14 @@ function Index() {
   }, [checkIsApiLive, apiCallback]);
 
   return (
-    <div>
-      <h1>Elden ring map</h1>
-      <p>
-        <a href="/login">Take me to login page</a>
-      </p>
-      <p>
-        <a href="/admin">Take me to admin page</a>
-      </p>
-      <p>
-        <a href="/map/v1">Take me to map page (v1)</a>
-      </p>
-      <p>
-        <a href="/map/v2">Take me to map page (v2)</a>
-      </p>
+    <div className="p-6">
+      <EldenRingMapTitle />
+      <div className="pt-4 space-y-2">
+        <PageLink pagePath="/login" pageName="Take me to login page" />
+        <PageLink pagePath="/admin" pageName="Take me to admin page" />
+        <PageLink pagePath="/map/v1" pageName="Take me to map page (v1)" />
+        <PageLink pagePath="/map/v2" pageName="Take me to map page (v2)" />
+      </div>
       {isBackendLive && <p>Backend is live and well</p>}
       {userList !== null && (
         <ul>
@@ -107,5 +101,17 @@ function Index() {
         </ul>
       )}
     </div>
+  );
+}
+
+function EldenRingMapTitle() {
+  return <h1 className="font-bold text-6xl text-on-surface">Elden ring map</h1>;
+}
+
+function PageLink(props: { pagePath: string; pageName: string }) {
+  return (
+    <p className="hover:text-on-surface-variant hover:underline">
+      <a href={props.pagePath}>{props.pageName}</a>
+    </p>
   );
 }

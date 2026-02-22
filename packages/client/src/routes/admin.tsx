@@ -2,6 +2,7 @@ import React from "react";
 import { trpcClient } from "../api";
 import GoBackHomeLink from "../components/GoBackHomeLink";
 import { createFileRoute } from "@tanstack/react-router";
+import { PageTitleText } from "../components/PageTitleText";
 
 export const Route = createFileRoute("/admin")({
   component: RouteComponent,
@@ -14,8 +15,8 @@ function RouteComponent() {
   }, []);
 
   return (
-    <div className="bg-surface">
-      <h1 className="bg-amber-300">Admin panel</h1>
+    <div className="bg-surface p-6">
+      <PageTitleText title="Admin panel" />
       <GoBackHomeLink />
       <h3>Database actions</h3>
       <div>
