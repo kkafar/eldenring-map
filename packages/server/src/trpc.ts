@@ -1,13 +1,13 @@
 import { initTRPC } from "@trpc/server";
 import type { CreateNextContextOptions } from '@trpc/server/adapters/next';
+import { getDataStoreProviderInstance } from './db';
 
 import { Context } from "./types";
-import { createConnection } from "./db";
 
 
 export async function createContext(_: CreateNextContextOptions): Promise<Context> {
   return {
-    db: createConnection()
+    db: getDataStoreProviderInstance().getDataStore()
   }
 }
 
