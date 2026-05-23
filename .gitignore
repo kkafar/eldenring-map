@@ -35,3 +35,6 @@ pages/
 .tanstack/
 
 *.zip
+*.local*
+local*
+local.notes/
