@@ -1,11 +1,12 @@
-import React from 'react'
-import { trpcClient } from '../api';
-import GoBackHomeLink from '../components/GoBackHomeLink';
-import { createFileRoute } from '@tanstack/react-router'
+import React from "react";
+import { trpcClient } from "../api";
+import GoBackHomeLink from "../components/GoBackHomeLink";
+import { createFileRoute } from "@tanstack/react-router";
+import { PageTitleText } from "../components/PageTitleText";
 
-export const Route = createFileRoute('/admin')({
+export const Route = createFileRoute("/admin")({
   component: RouteComponent,
-})
+});
 
 function RouteComponent() {
   const onResetDbClick = React.useCallback(() => {
@@ -14,19 +15,17 @@ function RouteComponent() {
   }, []);
 
   return (
-    <div>
-      <h1>Admin panel</h1>
+    <div className="bg-surface p-6">
+      <PageTitleText title="Admin panel" />
       <GoBackHomeLink />
       <h3>Database actions</h3>
       <div>
         <ul>
           <li>
-            <button onClick={onResetDbClick}>
-              Reset database
-            </button>
+            <button onClick={onResetDbClick}>Reset database</button>
           </li>
         </ul>
       </div>
     </div>
-  )
+  );
 }

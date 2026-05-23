@@ -1,0 +1,210 @@
+@import "tailwindcss";
+
+@import "./md-palette.css";
+
+@layer base {
+    /* Light Mode (Default) */
+    :root {
+        color-scheme: light;
+        /* Surface tint */
+        --md-sys-color-surface-tint: var(--md-sys-color-primary);
+        /* Surface tint color */
+        --md-sys-color-surface-tint-color: var(--md-sys-color-primary);
+        /* On error container */
+        --md-sys-color-on-error-container: var(--md-ref-palette-error10);
+        /* On error */
+        --md-sys-color-on-error: var(--md-ref-palette-error100);
+        /* Error container */
+        --md-sys-color-error-container: var(--md-ref-palette-error90);
+        /* On tertiary container */
+        --md-sys-color-on-tertiary-container: var(--md-ref-palette-tertiary10);
+        /* On tertiary */
+        --md-sys-color-on-tertiary: var(--md-ref-palette-tertiary100);
+        /* Tertiary container */
+        --md-sys-color-tertiary-container: var(--md-ref-palette-tertiary90);
+        /* Tertiary */
+        --md-sys-color-tertiary: var(--md-ref-palette-tertiary40);
+        /* Shadow */
+        --md-sys-color-shadow: var(--md-ref-palette-neutral0);
+        /* Error */
+        --md-sys-color-error: var(--md-ref-palette-error40);
+        /* Outline */
+        --md-sys-color-outline: var(--md-ref-palette-neutral-variant50);
+        /* On background */
+        --md-sys-color-on-background: var(--md-ref-palette-neutral10);
+        /* Background */
+        --md-sys-color-background: var(--md-ref-palette-neutral99);
+        /* Inverse on surface */
+        --md-sys-color-inverse-on-surface: var(--md-ref-palette-neutral95);
+        /* Inverse surface */
+        --md-sys-color-inverse-surface: var(--md-ref-palette-neutral20);
+        /* On surface variant */
+        --md-sys-color-on-surface-variant: var(
+            --md-ref-palette-neutral-variant30
+        );
+        /* On surface */
+        --md-sys-color-on-surface: var(--md-ref-palette-neutral10);
+        /* Surface Variant */
+        --md-sys-color-surface-variant: var(--md-ref-palette-neutral-variant90);
+        /* Surface */
+        --md-sys-color-surface: var(--md-ref-palette-neutral99);
+        /* On secondary container */
+        --md-sys-color-on-secondary-container: var(
+            --md-ref-palette-secondary10
+        );
+        /* On secondary */
+        --md-sys-color-on-secondary: var(--md-ref-palette-secondary100);
+        /* Secondary container */
+        --md-sys-color-secondary-container: var(--md-ref-palette-secondary90);
+        /* Secondary */
+        --md-sys-color-secondary: var(--md-ref-palette-secondary40);
+        /* Inverse primary */
+        --md-sys-color-inverse-primary: var(--md-ref-palette-primary80);
+        /* On primary container */
+        --md-sys-color-on-primary-container: var(--md-ref-palette-primary10);
+        /* On primary */
+        --md-sys-color-on-primary: var(--md-ref-palette-primary100);
+        /* Primary container */
+        --md-sys-color-primary-container: var(--md-ref-palette-primary90);
+        /* Primary */
+        --md-sys-color-primary: var(--md-ref-palette-primary40);
+    }
+
+    /* Dark Mode (Automatic via OS preference) */
+    @media (prefers-color-scheme: dark) {
+        :root {
+            color-scheme: dark;
+            /* Surface tint */
+            --md-sys-color-surface-tint: var(--md-sys-color-primary);
+            /* Surface tint color */
+            --md-sys-color-surface-tint-color: var(--md-sys-color-primary);
+            /* On error container */
+            --md-sys-color-on-error-container: var(--md-ref-palette-error80);
+            /* On error */
+            --md-sys-color-on-error: var(--md-ref-palette-error20);
+            /* Error container */
+            --md-sys-color-error-container: var(--md-ref-palette-error30);
+            /* On tertiary container */
+            --md-sys-color-on-tertiary-container: var(
+                --md-ref-palette-tertiary90
+            );
+            /* On tertiary */
+            --md-sys-color-on-tertiary: var(--md-ref-palette-tertiary20);
+            /* Tertiary container */
+            --md-sys-color-tertiary-container: var(--md-ref-palette-tertiary30);
+            /* Tertiary */
+            --md-sys-color-tertiary: var(--md-ref-palette-tertiary80);
+            /* Shadow */
+            --md-sys-color-shadow: var(--md-ref-palette-neutral0);
+            /* Error */
+            --md-sys-color-error: var(--md-ref-palette-error80);
+            /* Outline */
+            --md-sys-color-outline: var(--md-ref-palette-neutral-variant60);
+            /* On background */
+            --md-sys-color-on-background: var(--md-ref-palette-neutral90);
+            /* Background */
+            --md-sys-color-background: var(--md-ref-palette-neutral10);
+            /* Inverse on surface */
+            --md-sys-color-inverse-on-surface: var(--md-ref-palette-neutral20);
+            /* Inverse surface */
+            --md-sys-color-inverse-surface: var(--md-ref-palette-neutral90);
+            /* On surface variant */
+            --md-sys-color-on-surface-variant: var(
+                --md-ref-palette-neutral-variant80
+            );
+            /* On surface */
+            --md-sys-color-on-surface: var(--md-ref-palette-neutral90);
+            /* Surface Variant */
+            --md-sys-color-surface-variant: var(
+                --md-ref-palette-neutral-variant30
+            );
+            /* Surface */
+            --md-sys-color-surface: var(--md-ref-palette-neutral10);
+            /* On secondary container */
+            --md-sys-color-on-secondary-container: var(
+                --md-ref-palette-secondary90
+            );
+            /* On secondary */
+            --md-sys-color-on-secondary: var(--md-ref-palette-secondary20);
+            /* Secondary container */
+            --md-sys-color-secondary-container: var(
+                --md-ref-palette-secondary30
+            );
+            /* Secondary */
+            --md-sys-color-secondary: var(--md-ref-palette-secondary80);
+            /* Inverse primary */
+            --md-sys-color-inverse-primary: var(--md-ref-palette-primary40);
+            /* On primary container */
+            --md-sys-color-on-primary-container: var(
+                --md-ref-palette-primary90
+            );
+            /* On primary */
+            --md-sys-color-on-primary: var(--md-ref-palette-primary20);
+            /* Primary container */
+            --md-sys-color-primary-container: var(--md-ref-palette-primary30);
+            /* Primary */
+            --md-sys-color-primary: var(--md-ref-palette-primary80);
+        }
+    }
+}
+
+@theme {
+    /* Surface tint */
+    --color-surface-tint: var(--md-sys-color-surface-tint);
+    /* Surface tint color */
+    --color-surface-tint-color: var(--md-sys-color-surface-tint-color);
+    /* On error container */
+    --color-on-error-container: var(--md-sys-color-on-error-container);
+    /* On error */
+    --color-on-error: var(--md-sys-color-on-error);
+    /* Error container */
+    --color-error-container: var(--md-sys-color-error-container);
+    /* On tertiary container */
+    --color-on-tertiary-container: var(--md-sys-color-on-tertiary-container);
+    /* On tertiary */
+    --color-on-tertiary: var(--md-sys-color-on-tertiary);
+    /* Tertiary container */
+    --color-tertiary-container: var(--md-sys-color-tertiary-container);
+    /* Tertiary */
+    --color-tertiary: var(--md-sys-color-tertiary);
+    /* Shadow */
+    --color-shadow: var(--md-sys-color-shadow);
+    /* Error */
+    --color-error: var(--md-sys-color-error);
+    /* Outline */
+    --color-outline: var(--md-sys-color-outline);
+    /* On background */
+    --color-on-background: var(--md-sys-color-on-background);
+    /* Background */
+    --color-background: var(--md-sys-color-background);
+    /* Inverse on surface */
+    --color-inverse-on-surface: var(--md-sys-color-inverse-on-surface);
+    /* Inverse surface */
+    --color-inverse-surface: var(--md-sys-color-inverse-surface);
+    /* On surface variant */
+    --color-on-surface-variant: var(--md-sys-color-on-surface-variant);
+    /* On surface */
+    --color-on-surface: var(--md-sys-color-on-surface);
+    /* Surface Variant */
+    --color-surface-variant: var(--md-sys-color-surface-variant);
+    /* Surface */
+    --color-surface: var(--md-sys-color-surface);
+    /* On secondary container */
+    --color-on-secondary-container: var(--md-sys-color-on-secondary-container);
+    /* On secondary */
+    --color-on-secondary: var(--md-sys-color-on-secondary);
+    /* Secondary container */
+    --color-secondary-container: var(--md-sys-color-secondary-container);
+    /* Secondary */
+    --color-secondary: var(--md-sys-color-secondary);
+    /* Inverse primary */
+    --color-inverse-primary: var(--md-sys-color-inverse-primary);
+    /* On primary container */
+    --color-on-primary-container: var(--md-sys-color-on-primary-container);
+    /* On primary */
+    --color-on-primary: var(--md-sys-color-on-primary);
+    /* Primary container */
+    --color-primary-container: var(--md-sys-color-primary-container);
+    /* Primary */
+    --color-primary: var(--md-sys-color-primary);
+}

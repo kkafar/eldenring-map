@@ -47,7 +47,7 @@ export class DatabaseProxy {
   }
 
   async listUsers(): Promise<Array<User>> {
-    return new Promise((resolve, reject)  => {
+    return new Promise((resolve, reject) => {
       this.conn.all("SELECT * FROM users;", function (err, rows: Array<User>) {
         if (err != null) {
           reject(err);
