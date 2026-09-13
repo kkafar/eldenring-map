@@ -1,0 +1,12 @@
+node_modules
+dist
+pnpm-lock.yaml
+**/routeTree.gen.ts
+packages/server/storage
+packages/server/seed/markers
+packages/client/src/assets
+packages/client/src/data
+.venv
+.claude
+local.notes
+scripts

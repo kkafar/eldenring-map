@@ -3,4 +3,4 @@ packages:
   - 'packages/server/'
 allowBuilds:
   esbuild: true
-  sqlite3: true
+  better-sqlite3: true

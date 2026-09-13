@@ -40,3 +40,11 @@ local*
 local.notes/
 
 .claude/plans/**
+
+# build output and tool caches
+dist/
+.eslintcache
+
+# server runtime data and gitignored seed data
+packages/server/storage/
+packages/server/seed/markers/
