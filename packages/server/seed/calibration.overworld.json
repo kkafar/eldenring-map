@@ -1,0 +1,8 @@
+{
+  "mapId": "overworld",
+  "a": 41.39574468085107,
+  "b": -455.35319148936173,
+  "c": -41.89090909090909,
+  "d": -795.9272727272727,
+  "note": "x_px = a*lng + b, y_px = c*lat + d; lat = source field x, lng = source field y. Initial constants carried over from the PoC (eyeballed), verified visually 2026-09-13."
+}
