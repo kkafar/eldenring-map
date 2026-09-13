@@ -38,3 +38,5 @@ pages/
 *.local*
 local*
 local.notes/
+
+.claude/plans/**
